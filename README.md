@@ -25,3 +25,9 @@ bunx jsr add @sevenc-nanashi/valuetree-ts
 ## License
 
 This project is licensed under the MIT License.
+
+## Acknowledgments
+
+Parser implementation is based on
+[libresvip](https://github.com/SoulMelody/LibreSVIP/blob/main/libresvip/plugins/tssln/model.py).
+See [NOTICE.md](./NOTICE.md) for more information.
