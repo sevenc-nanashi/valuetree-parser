@@ -1,0 +1,33 @@
+name: Publish
+
+on:
+  push:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+      - name: Lint
+        run: |
+          deno lint
+          deno fmt --check
+      - name: Run test
+        run: |
+          deno test -A
+      - name: Publish
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          deno publish
+      - name: Dry-run publish
+        if: "!startsWith(github.ref, 'refs/tags/')"
+        run: |
+          deno publish --dry-run
