@@ -1,5 +1,5 @@
 import { parseValueTree } from "./parse.ts";
-import { writeValueTree } from "./write.ts";
+import { dumpValueTree } from "./dump.ts";
 import { assertEquals } from "@std/assert/assert-equals";
 
 Deno.test("expla1n(self)", async () => {
@@ -7,7 +7,7 @@ Deno.test("expla1n(self)", async () => {
 
   const valueTree = parseValueTree(tssln);
 
-  const written = writeValueTree(valueTree);
+  const written = dumpValueTree(valueTree);
 
   const reParsed = parseValueTree(written);
 

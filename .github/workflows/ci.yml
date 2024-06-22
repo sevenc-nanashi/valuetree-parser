@@ -26,7 +26,8 @@ jobs:
       - name: Publish
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          deno publish
+          # TODO: False positive
+          deno publish --allow-slow-types
       - name: Dry-run publish
         if: "!startsWith(github.ref, 'refs/tags/')"
         run: |

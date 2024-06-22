@@ -1,18 +1,30 @@
 // Based on: https://github.com/SoulMelody/LibreSVIP/blob/main/libresvip/plugins/tssln/value_tree.py
 
-import { ValueTree, VariantType, variantTypes } from "./common.ts";
+import type { ValueTree, VariantType } from "./common.ts";
 import { BinaryWriter } from "@sevenc-nanashi/binaryseeker";
 
+const reverseVariantTypes = {
+  int: 1,
+  boolTrue: 2,
+  boolFalse: 3,
+  double: 4,
+  string: 5,
+  int64: 6,
+  array: 7,
+  binary: 8,
+  undefined: 9,
+} as const satisfies Record<string, number>;
+
 /**
- * Writes a JUCE's ValueTree to a Uint8Array.
+ * Dumps a JUCE's ValueTree to a Uint8Array.
  *
- * @param valueTree The ValueTree to write.
+ * @param valueTree The ValueTree to dump.
  * @returns The Uint8Array containing the ValueTree.
  */
-export const writeValueTree = (valueTree: ValueTree): Uint8Array => {
+export const dumpValueTree = (valueTree: ValueTree): Uint8Array => {
   const reader = new BinaryWriter();
 
-  writeValueTreeInner(reader, valueTree);
+  writeValueTree(reader, valueTree);
 
   return reader.toUint8Array();
 };
@@ -28,10 +40,7 @@ const writeCompreseedInt = (writer: BinaryWriter, value: number): void => {
   writer.writeBytes(new Uint8Array(bytes));
 };
 
-const writeValueTreeInner = (
-  writer: BinaryWriter,
-  valueTree: ValueTree,
-): void => {
+const writeValueTree = (writer: BinaryWriter, valueTree: ValueTree): void => {
   writer.writeString(valueTree.type);
 
   writeCompreseedInt(writer, Object.keys(valueTree.attributes).length);
@@ -43,12 +52,12 @@ const writeValueTreeInner = (
 
   writeCompreseedInt(writer, valueTree.children.length);
   for (const child of valueTree.children) {
-    writeValueTreeInner(writer, child);
+    writeValueTree(writer, child);
   }
 };
 
 const writeVariant = (writer: BinaryWriter, value: VariantType): void => {
-  let variantType: (typeof variantTypes)[keyof typeof variantTypes];
+  let variantType: keyof typeof reverseVariantTypes;
   switch (typeof value) {
     case "number":
       if (Number.isInteger(value)) {
@@ -86,12 +95,7 @@ const writeVariant = (writer: BinaryWriter, value: VariantType): void => {
       throw new Error(`Unknown variant type: ${value}`);
   }
 
-  const variantTypeInt = Object.entries(variantTypes).find(
-    ([, type]) => type === variantType,
-  )?.[0];
-  if (!variantTypeInt) {
-    throw new Error(`Unknown variant type: ${variantType}`);
-  }
+  const variantTypeInt = reverseVariantTypes[variantType];
 
   const subWriter = new BinaryWriter();
 

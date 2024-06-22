@@ -1,15 +1,3 @@
-export const variantTypes = {
-  1: "int",
-  2: "boolTrue",
-  3: "boolFalse",
-  4: "double",
-  5: "string",
-  6: "int64",
-  7: "array",
-  8: "binary",
-  9: "undefined",
-} as const satisfies Record<number, string>;
-
 /** Represents a JUCE's variant type. */
 export type VariantType =
   | number

@@ -1,5 +1,17 @@
 import { BinaryReader } from "@sevenc-nanashi/binaryseeker";
-import { ValueTree, VariantType, variantTypes } from "./common.ts";
+import type { ValueTree, VariantType } from "./common.ts";
+
+const variantTypes = {
+  1: "int",
+  2: "boolTrue",
+  3: "boolFalse",
+  4: "double",
+  5: "string",
+  6: "int64",
+  7: "array",
+  8: "binary",
+  9: "undefined",
+} as const satisfies Record<number, string>;
 
 // Based on: https://github.com/SoulMelody/LibreSVIP/blob/main/libresvip/plugins/tssln/value_tree.py
 
