@@ -13,5 +13,17 @@
   },
   "lint": {
     "rules": { "include": ["no-slow-types"] }
+  },
+  "publish": {
+    "include": [
+      "./mod.ts",
+      "./parse.ts",
+      "./dump.ts",
+      "./common.ts",
+      "./deno.json",
+      "./README.md",
+      "./LICENSE",
+      "./NOTICE.md"
+    ]
   }
 }
