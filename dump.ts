@@ -3,7 +3,7 @@
 import type { ValueTree, VariantType } from "./common.ts";
 import { BinaryWriter } from "@sevenc-nanashi/binaryseeker";
 
-const reverseVariantTypes = {
+const reverseVariantTypes: Record<VariantType["type"], number> = {
   int: 1,
   boolTrue: 2,
   boolFalse: 3,
@@ -13,7 +13,7 @@ const reverseVariantTypes = {
   array: 7,
   binary: 8,
   undefined: 9,
-} as const satisfies Record<string, number>;
+};
 
 /**
  * Dumps a JUCE's ValueTree to a Uint8Array.
@@ -57,78 +57,40 @@ const writeValueTree = (writer: BinaryWriter, valueTree: ValueTree): void => {
 };
 
 const writeVariant = (writer: BinaryWriter, value: VariantType): void => {
-  let variantType: keyof typeof reverseVariantTypes;
-  switch (typeof value) {
-    case "number":
-      if (Number.isInteger(value)) {
-        if (value >= -2147483648 && value <= 2147483647) {
-          variantType = "int";
-        } else {
-          variantType = "int64";
-        }
-      } else {
-        variantType = "double";
-      }
-
-      break;
-    case "boolean":
-      variantType = value ? "boolTrue" : "boolFalse";
-      break;
-    case "string":
-      variantType = "string";
-      break;
-    case "bigint":
-      variantType = "int64";
-      break;
-    case "object":
-      if (Array.isArray(value)) {
-        variantType = "array";
-      } else if (value instanceof Uint8Array) {
-        variantType = "binary";
-      } else if (value === undefined) {
-        variantType = "undefined";
-      } else {
-        throw new Error(`Unknown variant type: ${value}`);
-      }
-      break;
-    default:
-      throw new Error(`Unknown variant type: ${value}`);
-  }
-
-  const variantTypeInt = reverseVariantTypes[variantType];
+  const variantTypeInt = reverseVariantTypes[value.type];
 
   const subWriter = new BinaryWriter();
 
   subWriter.writeUInt8(Number(variantTypeInt));
 
-  switch (variantType) {
+  switch (value.type) {
     case "int":
-      subWriter.writeInt32LE(value as number);
+      subWriter.writeInt32LE(value.value);
       break;
     case "boolTrue":
     case "boolFalse":
       break;
     case "double":
-      subWriter.writeFloat64LE(value as number);
+      subWriter.writeFloat64LE(value.value);
       break;
     case "string":
-      subWriter.writeString(value as string);
+      subWriter.writeString(value.value);
       break;
     case "int64":
-      subWriter.writeUInt64LE(value as bigint);
+      subWriter.writeUInt64LE(value.value);
       break;
     case "array": {
-      const length = (value as VariantType[]).length;
+      const length = value.value.length;
       writeCompreseedInt(subWriter, length);
 
-      for (const item of value as VariantType[]) {
+      for (const item of value.value) {
         writeVariant(subWriter, item);
       }
 
       break;
     }
     case "binary":
-      subWriter.writeBytes(value as Uint8Array);
+      subWriter.writeBytes(value.value);
       break;
 
     case "undefined":

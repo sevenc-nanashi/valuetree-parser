@@ -11,7 +11,7 @@ const variantTypes = {
   7: "array",
   8: "binary",
   9: "undefined",
-} as const satisfies Record<number, string>;
+} as const satisfies Record<number, VariantType["type"]>;
 
 // Based on: https://github.com/SoulMelody/LibreSVIP/blob/main/libresvip/plugins/tssln/value_tree.py
 
@@ -72,17 +72,17 @@ const readVariant = (reader: BinaryReader): VariantType => {
 
   switch (variantType) {
     case "int":
-      return reader.readInt32LE();
+      return { type: variantType, value: reader.readInt32LE() };
     case "boolTrue":
-      return true;
+      return { type: variantType, value: true };
     case "boolFalse":
-      return false;
+      return { type: variantType, value: false };
     case "double":
-      return reader.readFloat64LE();
+      return { type: variantType, value: reader.readFloat64LE() };
     case "string":
-      return reader.readString();
+      return { type: variantType, value: reader.readString() };
     case "int64":
-      return reader.readUInt64LE();
+      return { type: variantType, value: reader.readInt64LE() };
     case "array": {
       const length = readCompreseedInt(reader);
       const array = [];
@@ -91,12 +91,12 @@ const readVariant = (reader: BinaryReader): VariantType => {
         array.push(readVariant(reader));
       }
 
-      return array;
+      return { type: variantType, value: array };
     }
     case "binary": {
-      return reader.readBytes(numBytes - 1);
+      return { type: variantType, value: reader.readBytes(numBytes - 1) };
     }
     case "undefined":
-      return undefined;
+      return { type: variantType, value: undefined };
   }
 };

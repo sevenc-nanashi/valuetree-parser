@@ -9,7 +9,5 @@ Deno.test("expla1n(self)", async () => {
 
   const written = dumpValueTree(valueTree);
 
-  const reParsed = parseValueTree(written);
-
-  assertEquals(valueTree, reParsed);
+  assertEquals(written, tssln);
 });
