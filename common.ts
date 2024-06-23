@@ -1,41 +1,41 @@
 /** Represents a JUCE's variant type. */
 export type VariantType =
   | {
-      type: "int";
-      value: number;
-    }
+    type: "int";
+    value: number;
+  }
   | {
-      type: "boolTrue";
-      value: true;
-    }
+    type: "boolTrue";
+    value: true;
+  }
   | {
-      type: "boolFalse";
-      value: false;
-    }
+    type: "boolFalse";
+    value: false;
+  }
   | {
-      type: "double";
-      value: number;
-    }
+    type: "double";
+    value: number;
+  }
   | {
-      type: "string";
-      value: string;
-    }
+    type: "string";
+    value: string;
+  }
   | {
-      type: "int64";
-      value: bigint;
-    }
+    type: "int64";
+    value: bigint;
+  }
   | {
-      type: "array";
-      value: VariantType[];
-    }
+    type: "array";
+    value: VariantType[];
+  }
   | {
-      type: "binary";
-      value: Uint8Array;
-    }
+    type: "binary";
+    value: Uint8Array;
+  }
   | {
-      type: "undefined";
-      value: undefined;
-    };
+    type: "undefined";
+    value: undefined;
+  };
 
 /** Represents a JUCE's ValueTree. */
 export type ValueTree = {
