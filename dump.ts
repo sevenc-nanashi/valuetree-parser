@@ -59,9 +59,13 @@ const writeValueTree = (writer: BinaryWriter, valueTree: ValueTree): void => {
 const writeVariant = (writer: BinaryWriter, value: VariantType): void => {
   const variantTypeInt = reverseVariantTypes[value.type];
 
+  if (variantTypeInt === undefined) {
+    throw new Error(`Unknown variant type: ${value.type}`);
+  }
+
   const subWriter = new BinaryWriter();
 
-  subWriter.writeUInt8(Number(variantTypeInt));
+  subWriter.writeUInt8(variantTypeInt);
 
   switch (value.type) {
     case "int":
